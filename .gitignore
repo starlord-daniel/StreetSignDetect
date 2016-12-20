@@ -251,3 +251,4 @@ paket-files/
 .idea/
 *.sln.iml
 /StreetSignDetection/DataGenerator/Objects/Credentials.cs
+/StreetSignDetection/SignalRService/Objects/Credentials.cs

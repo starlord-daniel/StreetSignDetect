@@ -18,44 +18,41 @@
         $(function () {
             // Declare a proxy to reference the hub.
             var chat = $.connection.chatHub;
+            // car Location index
+            var index = 0;
             // Create a function that the hub can call to broadcast messages.
-            chat.client.broadcastMessage = function (name, message) {
-                // Log SQL result
-                console.log(name);
-                console.log(message);
+            chat.client.broadcastMessage = function (name, message, carLocationsJson, carIndex) {
 
                 // Deserialize JSON
                 var data = JSON.parse(message);
-                console.log(data);
 
                 // Clear Map
                 ClearMap();
 
-                // display last car position
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i].streetSign == "GO") {
-                        var lat = data[i].lat;
-                        var lon = data[i].lon;
-                        addCarPushpin(lat, lon);
-                        console.log("Car displayed at Lat: " + lat + ", Lon: " + lon)
-                        break;
-                    }
-                }
+                // Display car
+                var carLocations = JSON.parse(carLocationsJson);
+                var latCar = carLocations.locationList[carIndex].latitude;
+                var lonCar = carLocations.locationList[carIndex].longitude;
+
+                addCarPushpin(latCar, lonCar);
+                console.log(carIndex);
+
                 // Display stop signs
                 for (var i = 0; i < data.length; i++) {
                     if (data[i].streetSign == "STOP") {
                         var lat = data[i].lat;
                         var lon = data[i].lon;
                         addPushpin(lat, lon);
-                        console.log("Sign displayed at Lat: " + lat + ", Lon: " + lon)
                     }
                 }
-                
             };
             // Start the connection.
             $.connection.hub.start().done(function () {
-                var timeoutInMilliseconds = 2000;
-                setInterval(function () { chat.server.send("Client", "Click"); }, timeoutInMilliseconds);
+                var timeoutInMilliseconds = 1500;
+                setInterval(function () {
+                    // trigger the SignalR broadcast
+                    chat.server.send("Client", "Click");
+                }, timeoutInMilliseconds);
             });
         });
     </script>

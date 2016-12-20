@@ -7,6 +7,11 @@ using System.Data;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using SignalRService.Objects;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.Azure;
+using Microsoft.WindowsAzure.Storage.Blob;
+using System.IO;
+using DataGenerator.Objects;
 
 namespace SignalRService
 {
@@ -23,8 +28,39 @@ namespace SignalRService
             // Convert Results to JSON
             var jsonSQL = JsonConvert.SerializeObject(sqlData);
 
+            // get location as json string
+            var carJson = GetCarJson();
+
+            var carIndex = JsonConvert.DeserializeObject<LocationObject>(carJson);
+            IndexCounter.index = IndexCounter.index + 1;
+
             // Call the broadcastMessage method to update clients.
-            Clients.All.broadcastMessage("Server", jsonSQL);
+            Clients.All.broadcastMessage("Server", jsonSQL, carJson, IndexCounter.index % carIndex.locationList.Length);
+        }
+
+        private string GetCarJson()
+        {
+            // Retrieve storage account from connection string.
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
+                $"DefaultEndpointsProtocol=https;AccountName={Credentials.BLOB_NAME};AccountKey={Credentials.BLOB_KEY}");
+
+            // Create the blob client.
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            // Retrieve reference to a previously created container.
+            CloudBlobContainer container = blobClient.GetContainerReference("locationcontainer");
+
+            // Retrieve reference to a blob named "myblob.txt"
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference("positiondata.json");
+
+            string text;
+            using (var memoryStream = new MemoryStream())
+            {
+                blockBlob.DownloadToStream(memoryStream);
+                text = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
+            }
+
+            return text;
         }
 
         private List<GeoObject> GetSQLResult(string query)

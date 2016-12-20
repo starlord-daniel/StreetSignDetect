@@ -54,3 +54,4 @@ function asyncLoop(secTimeout, func, callback) {
     loop.next();
     return loop;
 }
+
