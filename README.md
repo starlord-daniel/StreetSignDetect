@@ -13,14 +13,14 @@ The repository features 2 applications:
 
 1. A data generator that creates random data files in the following JSON format. This is send via the IoTHub, over a Stream Analytics Service to a SQL Database.
 
-```json
-{
-    "DeviceID":"BlueBox1", 
-    "Latitude": 30.272164093811060, 
-    "Longitude": -97.739044053646921, 
-    "StreetSign": "STOP"
-}
-```
+    ```json
+    {
+        "DeviceID":"BlueBox1", 
+        "Latitude": 30.272164093811060, 
+        "Longitude": -97.739044053646921, 
+        "StreetSign": "STOP"
+    }
+    ```
 
 2. An ASP.Net website, which displays a interactive Bing Maps UI, which displays the latest STOP signs stored in the SQL database.
 
@@ -38,26 +38,26 @@ After you created the pipeline, you need to ensure the following settings:
 
 1. Set your SQL credentials in the Web.config file of the SignalRService. Replace the connectionString value with valid SQL credentials.
 
-```xml
-<connectionStrings>
-    <add name="DbConnection"
-         connectionString="ADD YOUR SQL CREDENTIALS HERE"
-         providerName="System.Data.SqlClient" />
-  </connectionStrings>
-```
+    ```xml
+    <connectionStrings>
+        <add name="DbConnection"
+             connectionString="ADD YOUR SQL CREDENTIALS HERE"
+             providerName="System.Data.SqlClient" />
+      </connectionStrings>
+    ```
 
 2. Add a credentials file to your DataGenerator, that looks like the class below. Replace the IoTHub Uri und Device Key to connect to your pipeline.
 
-```csharp
-namespace DataGenerator.Objects
-{
-    public static class Credentials
+    ```csharp
+    namespace DataGenerator.Objects
     {
-        public static string IOT_HUB_URI = "IoTHub URI";
-        public static string DEVICE_KEY = "DEVICE KEY";
+        public static class Credentials
+        {
+            public static string IOT_HUB_URI = "IoTHub URI";
+            public static string DEVICE_KEY = "DEVICE KEY";
+        }
     }
-}
-```
+    ```
 
 
 
