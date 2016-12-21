@@ -24,14 +24,18 @@ The repository features 2 applications:
 
 2. An ASP.Net website, which displays a interactive Bing Maps UI, which displays the latest STOP signs stored in the SQL database.
 
-![Maps on Website](_images/maps.png)
+    ![Maps on Website](_images/maps.png)
 
 ## Getting started
+
+### Prerequisites 
 
 To run the application, you need to build the IoTHub, StreamAnalytics job and SQL database yourself. You can find guidance on how to do this here:
 
 - [IoTHub](https://azure.microsoft.com/en-us/develop/iot/)
 - [Stream Analytics](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-introduction)
+
+    The Stream Analytics query can look like this:
 
     ```sql
     SELECT
@@ -45,7 +49,7 @@ To run the application, you need to build the IoTHub, StreamAnalytics job and SQ
 
 - [SQL Database](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-technical-overview)
 
-    SQL Database query can look something like this: 
+    A SQL database query can look like this. The table called locationdata should therefor contain a table with 5 columns: DeviceID, Latitude, Longitude, StreetSign and TimeStamp.
 
     ```sql
     SELECT TOP (1000) [DeviceID]
@@ -55,6 +59,8 @@ To run the application, you need to build the IoTHub, StreamAnalytics job and SQ
         ,[TimeStamp]
     FROM [dbo].[locationdata]
     ```
+
+### Keys and Settings
 
 After you created the pipeline, you need to ensure the following settings:
 
@@ -81,6 +87,34 @@ After you created the pipeline, you need to ensure the following settings:
     }
     ```
 
+3. A blob storage can be added to display a car driving a pre-defined road, a a fail-safe. The received blob data will be send via SignalR to every listening device. Here is the code to retreive the blob data:
+
+    ```csharp
+    private string GetCarJson()
+    {
+        // Retrieve storage account from connection string.
+        CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
+            $"DefaultEndpointsProtocol=https;AccountName={Credentials.BLOB_NAME};AccountKey={Credentials.BLOB_KEY}");
+
+        // Create the blob client.
+        CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+        // Retrieve reference to a previously created container.
+        CloudBlobContainer container = blobClient.GetContainerReference("locationcontainer");
+
+        // Retrieve reference to a blob named "myblob.txt"
+        CloudBlockBlob blockBlob = container.GetBlockBlobReference("positiondata.json");
+
+        string text;
+        using (var memoryStream = new MemoryStream())
+        {
+            blockBlob.DownloadToStream(memoryStream);
+            text = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
+        }
+
+        return text;
+    }
+    ```
 
 
 
