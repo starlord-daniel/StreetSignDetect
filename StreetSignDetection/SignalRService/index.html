@@ -4,7 +4,10 @@
     <title>Live Detection Stop Signs</title>
 </head>
 <body>
-    
+    <div class="container">
+        <label>Timeout</label>
+        <input id="timeout" type="number" />
+    </div>
     <div id='myMap' style='width: 100vw; height: 95vh;'></div>
 
     <script type='text/javascript' src='http://www.bing.com/api/maps/mapcontrol?branch=release&callback=loadMapScenario' async defer></script>
@@ -35,7 +38,6 @@
                 var lonCar = carLocations.locationList[carIndex].longitude;
 
                 addCarPushpin(latCar, lonCar);
-                console.log(carIndex);
 
                 // Display stop signs
                 for (var i = 0; i < data.length; i++) {
@@ -48,7 +50,9 @@
             };
             // Start the connection.
             $.connection.hub.start().done(function () {
-                var timeoutInMilliseconds = 1500;
+                var timeout = $("")
+                console.log(timeout);
+                var timeoutInMilliseconds = 500;
                 setInterval(function () {
                     // trigger the SignalR broadcast
                     chat.server.send("Client", "Click");

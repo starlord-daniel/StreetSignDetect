@@ -32,7 +32,29 @@ To run the application, you need to build the IoTHub, StreamAnalytics job and SQ
 
 - [IoTHub](https://azure.microsoft.com/en-us/develop/iot/)
 - [Stream Analytics](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-introduction)
+
+    ```sql
+    SELECT
+        DeviceID, Latitude, Longitude, StreetSign, 
+        EventEnqueuedUtcTime AS [TimeStamp]
+    INTO
+        SQLOutput
+    FROM
+        IoTHubInput
+    ```
+
 - [SQL Database](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-technical-overview)
+
+    SQL Database query can look something like this: 
+
+    ```sql
+    SELECT TOP (1000) [DeviceID]
+        ,[Latitude]
+        ,[Longitude]
+        ,[StreetSign]
+        ,[TimeStamp]
+    FROM [dbo].[locationdata]
+    ```
 
 After you created the pipeline, you need to ensure the following settings:
 
